@@ -26,9 +26,6 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
       - [Prerequisite Tools](#prerequisite-tools)
       - [Fetch from GitHub](#fetch-from-github)
     - [Command Usage](#command-usage)
-    - [Send Android notification](#send-android-notification)
-    - [Send iOS notification](#send-ios-notification)
-    - [Send Android or iOS notifications using Firebase](#send-android-or-ios-notifications-using-firebase)
   - [Run gorush web server](#run-gorush-web-server)
   - [Web API](#web-api)
     - [GET /api/stat/go](#get-apistatgo)
@@ -126,9 +123,11 @@ api:
   metric_uri: "/metrics"
   health_uri: "/healthz"
 
+firebase:
+  credentials_file: "/path/to/firebase-adminsdk.json"
+
 android:
   enabled: true
-  apikey: "YOUR_API_KEY"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 ios:
@@ -247,83 +246,11 @@ go install
 Usage: gorush [options]
 
 Server Options:
-    -A, --address <address>          Address to bind (default: any)
-    -p, --port <port>                Use port for clients (default: 8088)
     -c, --config <file>              Configuration file path
-    -m, --message <message>          Notification message
-    -t, --token <token>              Notification token
-    -e, --engine <engine>            Storage engine (memory, redis ...)
-    --title <title>                  Notification title
-    --proxy <proxy>                  Proxy URL (support http, https, or socks5)
-    --pid <pid path>                 Process identifier path
-    --redis-addr <redis addr>        Redis addr (default: localhost:6379)
-iOS Options:
-    -i, --key <file>                 certificate key file path
-    -P, --password <password>        certificate key password
-    --ios                            enabled iOS (default: false)
-    --production                     iOS production mode (default: false)
-Android Options:
-    -k, --apikey <api_key>           Android API Key
-    --android                        enabled android (default: false)
+    --ping                           healthy check command for container
 Common Options:
-    --topic <topic>                  iOS or Android topic message
     -h, --help                       Show this message
     -v, --version                    Show version
-```
-
-### Send Android notification
-
-Send single notification with the following command.
-
-```bash
-gorush -android -m "your message" -k "API Key" -t "Device token"
-```
-
-Send messages to topics.
-
-```bash
-gorush --android --topic "/topics/foo-bar" \
-  -m "This is a Firebase Cloud Messaging Topic Message" \
-  -k your_api_key
-```
-
-- `-m`: Notification message.
-- `-k`: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) api key
-- `-t`: Device token.
-- `--title`: Notification title.
-- `--topic`: Send messages to topics. note: don't add device token.
-- `--proxy`: Set `http`, `https` or `socks5` proxy url.
-
-### Send iOS notification
-
-Send single notification with the following command.
-
-```bash
-$ gorush -ios -m "your message" -i "your certificate path" \
-  -t "device token" --topic "apns topic"
-```
-
-- `-m`: Notification message.
-- `-i`: Apple Push Notification Certificate path (`pem` or `p12` file).
-- `-t`: Device token.
-- `--title`: Notification title.
-- `--topic`: The topic of the remote notification.
-- `--password`: The certificate password.
-
-The default endpoint is APNs development. Please add `-production` flag for APNs production push endpoint.
-
-```bash
-$ gorush -ios -m "your message" -i "your certificate path" \
-  -t "device token" \
-  -production
-```
-
-### Send Android or iOS notifications using Firebase
-
-Send single notification with the following command:
-
-```bash
-gorush -android -m "your message" -k "API key" -t "Device token"
 ```
 
 ## Run gorush web server
@@ -530,13 +457,10 @@ The Request body must have a notifications array. The following is a parameter t
 | data                    | string array | extensible partition                                                                              | -        |                                                               |
 | retry                   | int          | retry send notification if fail response from server. Value must be small than `max_retry` field. | -        |                                                               |
 | topic                   | string       | send messages to topics                                                                           |          |                                                               |
-| api_key                 | string       | api key for firebase cloud message                                                                | -        | only Android                                                  |
-| to                      | string       | The value must be a registration token, notification key, or topic.                               | -        | only Android                                                  |
 | collapse_key            | string       | a key for collapsing notifications                                                                | -        | only Android                                                  |
 | delay_while_idle        | bool         | a flag for device idling                                                                          | -        | only Android                                                  |
 | time_to_live            | uint         | expiration of message kept on FCM storage                                                         | -        | only Android                                                  |
 | restricted_package_name | string       | the package name of the application                                                               | -        | only Android                                                  |
-| dry_run                 | bool         | allows developers to test a request without actually sending a message                            | -        | only Android                                                  |
 | notification            | string array | payload of a FCM message                                                                          | -        | only Android. See the [detail](#android-notification-payload) |
 | expiration              | int          | expiration for notification                                                                       | -        | only iOS                                                      |
 | apns_id                 | string       | A canonical UUID that identifies the notification                                                 | -        | only iOS                                                      |
@@ -756,7 +680,7 @@ Send messages to topics
 {
   "notifications": [
     {
-      "to": "/topics/foo-bar",
+      "topic": "/topics/foo-bar",
       "platform": 2,
       "message": "This is a Firebase Cloud Messaging Topic Message"
     }

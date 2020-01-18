@@ -88,7 +88,7 @@ func main() {
 	g.Go(gorush.InitAPNSClient)
 
 	g.Go(func() error {
-		_, err := gorush.InitFCMClient(gorush.PushConf.Android.APIKey)
+		_, err := gorush.InitFCMClient(gorush.PushConf.Firebase.CredentialsFile)
 		return err
 	})
 

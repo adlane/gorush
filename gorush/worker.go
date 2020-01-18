@@ -82,7 +82,7 @@ func queueNotification(ctx context.Context, req RequestPush) (int, []LogPushEntr
 		}
 		count += len(notification.Tokens)
 		// Count topic message
-		if notification.To != "" {
+		if notification.Topic != "" {
 			count++
 		}
 	}

@@ -3,6 +3,7 @@ module github.com/appleboy/gorush
 go 1.13
 
 require (
+	firebase.google.com/go v3.12.0+incompatible
 	github.com/AndreasBriese/bbloom v0.0.0-20190825152654-46b345b51c96 // indirect
 	github.com/DataDog/zstd v1.4.0 // indirect
 	github.com/Sereal/Sereal v0.0.0-20190606082811-cf1bab6c7a3a // indirect
@@ -48,6 +49,7 @@ require (
 	golang.org/x/net v0.0.0-20191204025024-5ee1b9f4859a
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/sys v0.0.0-20191204072324-ce4227a45e2e // indirect
+	google.golang.org/api v0.15.0
 	google.golang.org/genproto v0.0.0-20191203220235-3fa9dbf08042 // indirect
 	google.golang.org/grpc v1.25.1
 	gopkg.in/go-playground/validator.v9 v9.30.2 // indirect
