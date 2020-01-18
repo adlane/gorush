@@ -47,6 +47,10 @@ api:
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
   health_uri: "/healthz"
+  auth:
+    basic:
+      user: "user"
+      password: "pass"
 
 firebase:
   credentials_file: ""
@@ -129,15 +133,27 @@ type SectionAutoTLS struct {
 	Host    string `yaml:"host"`
 }
 
+// BasicAuth in sub section of auth
+type SectionBasicAuth struct {
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+}
+
+// Auth in sub section of api
+type SectionAuth struct {
+	Basic *SectionBasicAuth `yaml:"basic"`
+}
+
 // SectionAPI is sub section of config.
 type SectionAPI struct {
-	PushURI    string `yaml:"push_uri"`
-	StatGoURI  string `yaml:"stat_go_uri"`
-	StatAppURI string `yaml:"stat_app_uri"`
-	ConfigURI  string `yaml:"config_uri"`
-	SysStatURI string `yaml:"sys_stat_uri"`
-	MetricURI  string `yaml:"metric_uri"`
-	HealthURI  string `yaml:"health_uri"`
+	PushURI    string       `yaml:"push_uri"`
+	StatGoURI  string       `yaml:"stat_go_uri"`
+	StatAppURI string       `yaml:"stat_app_uri"`
+	ConfigURI  string       `yaml:"config_uri"`
+	SysStatURI string       `yaml:"sys_stat_uri"`
+	MetricURI  string       `yaml:"metric_uri"`
+	HealthURI  string       `yaml:"health_uri"`
+	Auth       *SectionAuth `yaml:"auth"`
 }
 
 // SectionFirebase is sub section of config.
@@ -287,6 +303,15 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.API.SysStatURI = viper.GetString("api.sys_stat_uri")
 	conf.API.MetricURI = viper.GetString("api.metric_uri")
 	conf.API.HealthURI = viper.GetString("api.health_uri")
+	if viper.Get("api.auth") != nil {
+		auth := SectionAuth{}
+		if viper.Get("api.auth.basic") != nil {
+			auth.Basic = &SectionBasicAuth{}
+			auth.Basic.User = viper.GetString("api.auth.basic.user")
+			auth.Basic.Password = viper.GetString("api.auth.basic.password")
+			conf.API.Auth = &auth
+		}
+	}
 
 	// Firebase
 	conf.Firebase.CredentialsFile = viper.GetString("firebase.credentials_file")

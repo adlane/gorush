@@ -120,6 +120,10 @@ api:
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
   health_uri: "/healthz"
+  auth:
+    basic:
+      user: "user"
+      password: "pass"
 
 firebase:
   credentials_file: "/path/to/firebase-adminsdk.json"
