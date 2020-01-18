@@ -1,10 +1,11 @@
 package gorush
 
 import (
+	fcm "firebase.google.com/go/messaging"
+
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/storage"
 
-	"github.com/appleboy/go-fcm"
 	"github.com/sideshow/apns2"
 	"github.com/sirupsen/logrus"
 )

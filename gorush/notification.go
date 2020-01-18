@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 	"sync"
 
 	"github.com/appleboy/go-fcm"
@@ -68,15 +67,14 @@ type PushNotification struct {
 	Sound            interface{} `json:"sound,omitempty"`
 	Data             D           `json:"data,omitempty"`
 	Retry            int         `json:"retry,omitempty"`
+	Topic            string      `json:"topic,omitempty"`
 
 	// Android
 	APIKey                string           `json:"api_key,omitempty"`
-	To                    string           `json:"to,omitempty"`
 	CollapseKey           string           `json:"collapse_key,omitempty"`
 	DelayWhileIdle        bool             `json:"delay_while_idle,omitempty"`
 	TimeToLive            *uint            `json:"time_to_live,omitempty"`
 	RestrictedPackageName string           `json:"restricted_package_name,omitempty"`
-	DryRun                bool             `json:"dry_run,omitempty"`
 	Condition             string           `json:"condition,omitempty"`
 	Notification          fcm.Notification `json:"notification,omitempty"`
 
@@ -84,7 +82,6 @@ type PushNotification struct {
 	Expiration  *int64   `json:"expiration,omitempty"`
 	ApnsID      string   `json:"apns_id,omitempty"`
 	CollapseID  string   `json:"collapse_id,omitempty"`
-	Topic       string   `json:"topic,omitempty"`
 	PushType    string   `json:"push_type,omitempty"`
 	Badge       *int     `json:"badge,omitempty"`
 	Category    string   `json:"category,omitempty"`
@@ -121,8 +118,7 @@ func (p *PushNotification) AddLog(log LogPushEntry) {
 // IsTopic check if message format is topic for FCM
 // ref: https://firebase.google.com/docs/cloud-messaging/send-message#topic-http-post-request
 func (p *PushNotification) IsTopic() bool {
-	return (p.Platform == PlatFormAndroid && p.To != "" && strings.HasPrefix(p.To, "/topics/")) ||
-		p.Condition != ""
+	return (p.Platform == PlatFormAndroid && p.Topic != "") || p.Condition != ""
 }
 
 // CheckMessage for check request message
@@ -130,13 +126,13 @@ func CheckMessage(req PushNotification) error {
 	var msg string
 
 	// ignore send topic mesaage from FCM
-	if !req.IsTopic() && len(req.Tokens) == 0 && len(req.To) == 0 {
+	if !req.IsTopic() && len(req.Tokens) == 0 && len(req.Topic) == 0 {
 		msg = "the message must specify at least one registration ID"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
 	}
 
-	if len(req.Tokens) == PlatFormIos && len(req.Tokens[0]) == 0 {
+	if len(req.Tokens) == 1 && len(req.Tokens[0]) == 0 {
 		msg = "the token must not be empty"
 		LogAccess.Debug(msg)
 		return errors.New(msg)
@@ -194,8 +190,8 @@ func CheckPushConf() error {
 	}
 
 	if PushConf.Android.Enabled {
-		if PushConf.Android.APIKey == "" {
-			return errors.New("Missing Android API Key")
+		if PushConf.Firebase.CredentialsFile == "" {
+			return errors.New("Missing Credentials File")
 		}
 	}
 

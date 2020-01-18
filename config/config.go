@@ -49,9 +49,11 @@ api:
   metric_uri: "/metrics"
   health_uri: "/healthz"
 
+firebase:
+  credentials_file: ""
+
 android:
   enabled: true
-  apikey: "YOUR_API_KEY"
   max_retry: 0 # resend fail notification, default value zero is disabled
 
 ios:
@@ -90,13 +92,14 @@ stat:
 
 // ConfYaml is config structure.
 type ConfYaml struct {
-	Core    SectionCore    `yaml:"core"`
-	API     SectionAPI     `yaml:"api"`
-	Android SectionAndroid `yaml:"android"`
-	Ios     SectionIos     `yaml:"ios"`
-	Log     SectionLog     `yaml:"log"`
-	Stat    SectionStat    `yaml:"stat"`
-	GRPC    SectionGRPC    `yaml:"grpc"`
+	Core     SectionCore     `yaml:"core"`
+	API      SectionAPI      `yaml:"api"`
+	Firebase SectionFirebase `yaml:"firebase"`
+	Android  SectionAndroid  `yaml:"android"`
+	Ios      SectionIos      `yaml:"ios"`
+	Log      SectionLog      `yaml:"log"`
+	Stat     SectionStat     `yaml:"stat"`
+	GRPC     SectionGRPC     `yaml:"grpc"`
 }
 
 // SectionCore is sub section of config.
@@ -138,11 +141,15 @@ type SectionAPI struct {
 	HealthURI  string `yaml:"health_uri"`
 }
 
+// SectionFirebase is sub section of config.
+type SectionFirebase struct {
+	CredentialsFile string `yaml:"credentials_file"`
+}
+
 // SectionAndroid is sub section of config.
 type SectionAndroid struct {
-	Enabled  bool   `yaml:"enabled"`
-	APIKey   string `yaml:"apikey"`
-	MaxRetry int    `yaml:"max_retry"`
+	Enabled  bool `yaml:"enabled"`
+	MaxRetry int  `yaml:"max_retry"`
 }
 
 // SectionIos is sub section of config.
@@ -282,9 +289,11 @@ func LoadConf(confPath string) (ConfYaml, error) {
 	conf.API.MetricURI = viper.GetString("api.metric_uri")
 	conf.API.HealthURI = viper.GetString("api.health_uri")
 
+	// Firebase
+	conf.Firebase.CredentialsFile = viper.GetString("firebase.credentials_file")
+
 	// Android
 	conf.Android.Enabled = viper.GetBool("android.enabled")
-	conf.Android.APIKey = viper.GetString("android.apikey")
 	conf.Android.MaxRetry = viper.GetInt("android.max_retry")
 
 	// iOS
