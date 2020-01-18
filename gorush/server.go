@@ -37,13 +37,6 @@ func heartbeatHandler(c *gin.Context) {
 	c.AbortWithStatus(http.StatusOK)
 }
 
-func versionHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"source":  "https://github.com/appleboy/gorush",
-		"version": GetVersion(),
-	})
-}
-
 func pushHandler(c *gin.Context) {
 	var form RequestPush
 	var msg string
@@ -132,7 +125,6 @@ func routerEngine() *gin.Engine {
 	r.POST(PushConf.API.PushURI, pushHandler)
 	r.GET(PushConf.API.MetricURI, metricsHandler)
 	r.GET(PushConf.API.HealthURI, heartbeatHandler)
-	r.GET("/version", versionHandler)
 	r.GET("/", rootHandler)
 
 	return r
