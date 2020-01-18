@@ -70,7 +70,6 @@ A push notification micro server using [Gin](https://github.com/gin-gonic/gin) f
 - Support [HTTP/2](https://http2.github.io/) or HTTP/1.1 protocol.
 - Support notification queue and multiple workers.
 - Support `/api/stat/app` show notification success and failure counts.
-- Support `/api/config` show your [YAML](https://en.wikipedia.org/wiki/YAML) config.
 - Support store app stat to memory, [Redis](http://redis.io/), [BoltDB](https://github.com/boltdb/bolt), [BuntDB](https://github.com/tidwall/buntdb), [LevelDB](https://github.com/syndtr/goleveldb) or [BadgerDB](https://github.com/dgraph-io/badger).
 - Support `p8`, `p12` or `pem` format of iOS certificate file.
 - Support `/sys/stats` show response time, status code count, etc.
@@ -118,7 +117,6 @@ api:
   push_uri: "/api/push"
   stat_go_uri: "/api/stat/go"
   stat_app_uri: "/api/stat/app"
-  config_uri: "/api/config"
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
   health_uri: "/healthz"
@@ -276,7 +274,6 @@ Gorush support the following API.
 
 - **GET**  `/api/stat/go` Golang cpu, memory, gc, etc information. Thanks for [golang-stats-api-handler](https://github.com/fukata/golang-stats-api-handler).
 - **GET**  `/api/stat/app` show notification success and failure counts.
-- **GET**  `/api/config` show server yml config file.
 - **POST** `/api/push` push ios and android notifications.
 
 ### GET /api/stat/go

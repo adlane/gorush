@@ -44,7 +44,6 @@ api:
   push_uri: "/api/push"
   stat_go_uri: "/api/stat/go"
   stat_app_uri: "/api/stat/app"
-  config_uri: "/api/config"
   sys_stat_uri: "/sys/stats"
   metric_uri: "/metrics"
   health_uri: "/healthz"

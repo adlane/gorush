@@ -83,10 +83,6 @@ func pushHandler(c *gin.Context) {
 	})
 }
 
-func configHandler(c *gin.Context) {
-	c.YAML(http.StatusCreated, PushConf)
-}
-
 func metricsHandler(c *gin.Context) {
 	promhttp.Handler().ServeHTTP(c.Writer, c.Request)
 }
@@ -120,7 +116,6 @@ func routerEngine() *gin.Engine {
 
 	r.GET(PushConf.API.StatGoURI, api.GinHandler)
 	r.GET(PushConf.API.StatAppURI, appStatusHandler)
-	r.GET(PushConf.API.ConfigURI, configHandler)
 	r.GET(PushConf.API.SysStatURI, sysStatsHandler)
 	r.POST(PushConf.API.PushURI, pushHandler)
 	r.GET(PushConf.API.MetricURI, metricsHandler)
