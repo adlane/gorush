@@ -114,13 +114,25 @@ func routerEngine() *gin.Engine {
 	r.Use(LogMiddleware())
 	r.Use(StatMiddleware())
 
-	r.GET(PushConf.API.StatGoURI, api.GinHandler)
-	r.GET(PushConf.API.StatAppURI, appStatusHandler)
-	r.GET(PushConf.API.SysStatURI, sysStatsHandler)
-	r.POST(PushConf.API.PushURI, pushHandler)
-	r.GET(PushConf.API.MetricURI, metricsHandler)
-	r.GET(PushConf.API.HealthURI, heartbeatHandler)
-	r.GET("/", rootHandler)
+	var authorized *gin.RouterGroup
+	if PushConf.API.Auth == nil {
+		authorized = r.Group("/")
+	} else {
+		if PushConf.API.Auth.Basic != nil {
+			authorized = r.Group("/", gin.BasicAuth(gin.Accounts{
+				PushConf.API.Auth.Basic.User: PushConf.API.Auth.Basic.Password,
+			}))
+		} else {
+			authorized = r.Group("/")
+		}
+	}
+
+	authorized.GET(PushConf.API.StatGoURI, api.GinHandler)
+	authorized.GET(PushConf.API.StatAppURI, appStatusHandler)
+	authorized.GET(PushConf.API.SysStatURI, sysStatsHandler)
+	authorized.POST(PushConf.API.PushURI, pushHandler)
+	authorized.GET(PushConf.API.MetricURI, metricsHandler)
+	authorized.GET(PushConf.API.HealthURI, heartbeatHandler)
 
 	return r
 }
